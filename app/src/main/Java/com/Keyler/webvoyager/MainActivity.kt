@@ -16,18 +16,20 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import androidx.appcompat.content.res.AppCompatResources
+import android.widget.ImageButton
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var urlEditText: EditText
-    private lateinit var goButton: Button
+    private lateinit var goButton: ImageButton
     private lateinit var webView: WebView
-    private lateinit var backButton: Button
-    private lateinit var forwardButton: Button
-    private lateinit var reloadButton: Button
+    private lateinit var backButton: ImageButton
+    private lateinit var forwardButton: ImageButton
+    private lateinit var reloadButton: ImageButton
     private lateinit var progressBar: ProgressBar
-    private lateinit var favoritesButton: Button
-    private lateinit var addToFavoritesButton: Button
+    private lateinit var favoritesButton: ImageButton
+    private lateinit var addToFavoritesButton: ImageButton
 
     private val navigationHistory = ArrayList<String>()
     private var historyIndex = -1
