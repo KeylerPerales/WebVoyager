@@ -1,4 +1,5 @@
 # WebVoyager
 Un nuevo navegador hecho desde cero
 
-Cualquier carpeta que empieza con la letra mayúscula, cambiela a minúscula.
+# Introducción
+Este es un nuevo proyecto que estoy haciendo, mi objetivo es crear un navegador desde cero, rapido y seguro diferente a las de otros navegadores.
