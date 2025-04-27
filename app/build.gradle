@@ -6,12 +6,17 @@ android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.keyler.webvoyager"
-        minSdkVersion 14
-        targetSdkVersion 29
-        versionCode 1
-        versionName "a1.0.0-alpha"
+        minSdkVersion 19
+        targetSdkVersion 36
+        versionCode 21
+        versionName "1.0.0.145-alpha"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        vectorDrawables.useSupportLibrary = true
+		
+		sourceSets{
+			main{
+				assets.srcDirs = ['src/main/assets']
+			}
+		}
     }
     buildTypes {
         release {
@@ -43,6 +48,4 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-	implementation 'com.google.code.gson:gson:2.10.1' // Puedes usar la versión más reciente si lo deseas
-		
 }
