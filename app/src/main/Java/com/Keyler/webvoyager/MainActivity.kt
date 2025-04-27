@@ -1,179 +1,168 @@
 package com.keyler.webvoyager
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log // Importa la clase Log
-import android.view.KeyEvent
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
+import android.widget.Toast
+import android.webkit.WebSettings
+import androidx.appcompat.app.AlertDialog
+import android.widget.ArrayAdapter
+import android.webkit.DownloadListener
+import android.app.DownloadManager
 import androidx.appcompat.app.AppCompatActivity
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import androidx.appcompat.content.res.AppCompatResources
-import android.widget.ImageButton
+import android.net.Uri
+import android.os.Environment
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var urlEditText: EditText
-    private lateinit var goButton: ImageButton
+    private lateinit var editTextUrl: EditText
     private lateinit var webView: WebView
-    private lateinit var backButton: ImageButton
-    private lateinit var forwardButton: ImageButton
-    private lateinit var reloadButton: ImageButton
+    private lateinit var buttonGo: Button
+    private lateinit var buttonBack: Button
+    private lateinit var buttonForward: Button
+    private lateinit var buttonRefresh: Button
     private lateinit var progressBar: ProgressBar
-    private lateinit var favoritesButton: ImageButton
-    private lateinit var addToFavoritesButton: ImageButton
-
-    private val navigationHistory = ArrayList<String>()
-    private var historyIndex = -1
-
-    private val favorites = ArrayList<String>()
-    private val sharedPreferences by lazy { getSharedPreferences("favorites", Context.MODE_PRIVATE) }
-    private val gson = Gson()
+    private lateinit var webClient: WebViewClient
+	private val navigationHistory = mutableListOf<String>()
+    private lateinit var buttonHistory: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supportActionBar?.hide()
         setContentView(R.layout.activity_main)
 
-        // Obtener referencias a los elementos de la UI
-        urlEditText = findViewById(R.id.urlEditText)
-        goButton = findViewById(R.id.goButton)
+        editTextUrl = findViewById(R.id.editTextUrl)
         webView = findViewById(R.id.webView)
-        backButton = findViewById(R.id.backButton)
-        forwardButton = findViewById(R.id.forwardButton)
-        reloadButton = findViewById(R.id.reloadButton)
+        buttonGo = findViewById(R.id.buttonGo)
+        buttonBack = findViewById(R.id.buttonBack)
+        buttonForward = findViewById(R.id.buttonForward)
+        buttonRefresh = findViewById(R.id.buttonRefresh)
         progressBar = findViewById(R.id.progressBar)
-        favoritesButton = findViewById(R.id.favoritesButton)
-        addToFavoritesButton = findViewById(R.id.addToFavoritesButton)
+		buttonHistory = findViewById(R.id.buttonHistory)
 
-        loadFavorites() // Cargar los favoritos guardados al iniciar la actividad
+        val progressBarLocal = findViewById<ProgressBar>(R.id.progressBar)
+		
+		val webSettings: WebSettings = webView.settings
+		
+		webSettings.javaScriptEnabled = true
+		
+		webView.setDownloadListener(DownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
+            val request = DownloadManager.Request(Uri.parse(url))
 
-        // Verificar si se abrió un favorito
-        intent.getStringExtra("favorite_url")?.let { url ->
-            urlEditText.setText(url)
-            webView.loadUrl(url)
-        }
+            request.setMimeType(mimetype)
+            val filename = contentDisposition?.substringAfter("filename*=UTF-8''")?.substringBefore(";")
+                ?: contentDisposition?.substringAfter("filename=\"")?.substringBefore("\"")
+                ?: url.substringAfterLast("/")
 
-        // Habilitar JavaScript
-        webView.settings.javaScriptEnabled = true
+            request.setDescription("Descargando archivo")
+            request.setTitle(filename)
 
-        // Establecer un WebViewClient
-        webView.webViewClient = object : WebViewClient() {
-            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
-                progressBar.isIndeterminate = true
-                progressBar.visibility = View.VISIBLE
-                super.onPageStarted(view, url, favicon)
+            request.allowScanningByMediaScanner()
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)
+
+            val dm = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+            dm.enqueue(request)
+            Toast.makeText(this@MainActivity, "Descarga iniciada", Toast.LENGTH_LONG).show()
+        })
+
+        webClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
+                progressBarLocal.visibility = android.view.View.VISIBLE
+				progressBarLocal.isIndeterminate = true
+				if (!navigationHistory.contains(url) && url != null) {
+                    navigationHistory.add(url)
+                    if (navigationHistory.size > 10) {
+                        navigationHistory.removeAt(0)
+                    }
+                }
+				url?.let { editTextUrl.setText(it) }
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
-                progressBar.visibility = View.GONE
-                progressBar.isIndeterminate = false
-                backButton.isEnabled = historyIndex > 0
-                forwardButton.isEnabled = historyIndex < navigationHistory.size - 1
+                progressBarLocal.visibility = android.view.View.GONE
+				url?.let { editTextUrl.setText(it) }
+            }
 
-                if (url != null && (historyIndex == navigationHistory.size - 1 || url != navigationHistory.getOrNull(historyIndex))) {
-                    navigationHistory.add(url)
-                    historyIndex = navigationHistory.size - 1
-                }
+            override fun onReceivedError(
+                view: WebView?,
+                request: android.webkit.WebResourceRequest?,
+                error: android.webkit.WebResourceError?
+            ) {
+                progressBarLocal.visibility = android.view.View.GONE // Ocultar la barra de progreso en caso de error
+                // Mostrar un mensaje de error al usuario
+                Toast.makeText(this@MainActivity, "Error al cargar la página.", Toast.LENGTH_LONG).show()
+                // Puedes también cargar una página de error personalizada en el WebView si lo deseas
+                webView.loadUrl("file:///android_asset/error.html")
+            }
+        }
+        webView.webViewClient = webClient
+
+        buttonGo.setOnClickListener {
+            val url = editTextUrl.text.toString()
+            webView.loadUrl(url)
+        }
+        buttonBack.setOnClickListener {
+            if (webView.canGoBack()) {
+                webView.goBack()
             }
         }
 
-        // Listeners de los botones
-        goButton.setOnClickListener {
-            val url = urlEditText.text.toString()
-            if (url.isNotEmpty()) {
-                webView.clearCache(true)
-                webView.loadUrl(url)
-                navigationHistory.clear()
-                navigationHistory.add(url)
-                historyIndex = 0
-                updateNavigationButtons()
+        buttonForward.setOnClickListener {
+            if (webView.canGoForward()) {
+                webView.goForward()
             }
         }
 
-        backButton.setOnClickListener {
-            if (historyIndex > 0) {
-                historyIndex--
-                webView.loadUrl(navigationHistory[historyIndex])
-                updateNavigationButtons()
-            }
-        }
-
-        forwardButton.setOnClickListener {
-            if (historyIndex < navigationHistory.size - 1) {
-                historyIndex++
-                webView.loadUrl(navigationHistory[historyIndex])
-                updateNavigationButtons()
-            }
-        }
-
-        reloadButton.setOnClickListener {
+        buttonRefresh.setOnClickListener {
             webView.reload()
         }
+		
+		buttonHistory.setOnClickListener {
+            showHistoryDialog()
+		}
 
-        addToFavoritesButton.setOnClickListener {
-            val currentUrl = webView.url
-            Log.d("Favorites", "Current URL: $currentUrl")
-            if (!currentUrl.isNullOrEmpty() && !favorites.contains(currentUrl)) {
-                Log.d("Favorites", "Adding URL to favorites: $currentUrl")
-                favorites.add(currentUrl)
-                saveFavorites()
-                // Opcional: Puedes enviar un Broadcast o usar alguna otra forma de comunicar el cambio a FavoritesActivity si está activa
-
-                // Log para verificar que se añadió a la lista en MainActivity
-                Log.d("Favorites", "Favorites list in MainActivity after adding: $favorites")
-            } else {
-                Log.d("Favorites", "URL is null/empty or already in favorites.")
-            }
-        }
-
-        favoritesButton.setOnClickListener {
-            Log.d("Favorites", "Favorites button pressed.") // Log
-            // Aquí abriremos una nueva actividad o diálogo para mostrar los favoritos
-            val intent = Intent(this, FavoritesActivity::class.java)
-            startActivity(intent)
-        }
-
-        webView.setOnKeyListener(View.OnKeyListener { _, keyCode, event ->
-            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_BACK && webView.canGoBack()) {
-                webView.goBack()
-                return@OnKeyListener true
-            }
-            false
-        })
-
-        updateNavigationButtons()
-    }
-
-    fun saveFavorites() {
-        val json = gson.toJson(favorites)
-        sharedPreferences.edit().putString("favorites_list", json).apply()
-        Log.d("Favorites", "Favorites saved to SharedPreferences: $json")
-    }
-
-    fun loadFavorites() {
-        val json = sharedPreferences.getString("favorites_list", null)
-        Log.d("Favorites", "Loaded favorites JSON: $json")
-        if (!json.isNullOrEmpty()) {
-            val type = object : TypeToken<ArrayList<String>>() {}.type
-            val loadedFavorites = gson.fromJson<ArrayList<String>>(json, type)
-            if (loadedFavorites != null) {
-                favorites.clear()
-                favorites.addAll(loadedFavorites)
-                Log.d("Favorites", "Favorites loaded in MainActivity: $favorites")
-            }
+        // Restaurar el estado del WebView si hay un estado guardado
+        if (savedInstanceState != null) {
+            webView.restoreState(savedInstanceState)
+			val savedHistory = savedInstanceState.getStringArrayList("history")
+            if (savedHistory != null) {
+                navigationHistory.addAll(savedHistory)
+			}
+        } else {
+            // Cargar una página inicial si no hay estado guardado
+            webView.loadUrl("https://www.google.com") // Puedes cambiar esta URL por la que prefieras
+			navigationHistory.add("https://www.google.com")
+			editTextUrl.setText("https://www.google.com") // Establecer la URL inicial en el EditText
         }
     }
+	
+	private fun showHistoryDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Historial de Navegación")
 
-    private fun updateNavigationButtons() {
-        backButton.isEnabled = historyIndex > 0
-        forwardButton.isEnabled = historyIndex < navigationHistory.size - 1
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, navigationHistory)
+
+        builder.setAdapter(adapter) { dialog, which ->
+            val selectedUrl = navigationHistory[which]
+            webView.loadUrl(selectedUrl)
+        }
+
+        builder.setNegativeButton("Cerrar") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // Guardar el estado del WebView
+        webView.saveState(outState)
     }
 }
