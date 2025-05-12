@@ -6,24 +6,86 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <EditText
-        android:id="@+id/urlEditText"
+    <LinearLayout
+        android:id="@+id/linearLayoutAddressBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="@string/ingresar_url"
-        android:inputType="textUri"
-        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="vertical" app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/goButton" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <ImageButton
-        android:id="@+id/goButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/ir"
-        android:src="@drawable/ic_go" 
-		app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <EditText
+            android:id="@+id/editTextUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/editTextUrl"
+            android:inputType="textUri"
+            android:singleLine="true"
+            android:imeOptions="actionGo" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton
+                android:id="@+id/buttonBack"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_back"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/buttonBack" />
+
+            <ImageButton
+                android:id="@+id/buttonForward"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_forward"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/buttonForward" />
+
+            <ImageButton
+                android:id="@+id/buttonRefresh"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_refresh"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/buttonRefresh" />
+
+            <ImageButton
+                android:id="@+id/buttonGo"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_go"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/buttonGo" />
+
+            <ImageButton
+                android:id="@+id/buttonHistory"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_history"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/buttonHistory" />
+
+            <ImageButton
+                android:id="@+id/buttonHome"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:src="@drawable/ic_home"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/buttonHome" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -31,8 +93,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:indeterminate="true"
-        app:layout_constraintTop_toBottomOf="@+id/urlEditText"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayoutAddressBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -43,74 +104,17 @@
         app:layout_constraintTop_toBottomOf="@+id/progressBar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/navigationLayout" />
+        app:layout_constraintBottom_toTopOf="@+id/watermark_bottom" />
 
-    <LinearLayout
-        android:id="@+id/navigationLayout"
+    <TextView
+        android:id="@+id/watermark_bottom"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:gravity="left"
+        android:padding="8dp"
+        android:textAlignment="textEnd"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <ImageButton
-            android:id="@+id/backButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/atras"
-            android:enabled="false"
-            android:padding="12dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_back" />
-
-        <ImageButton
-            android:id="@+id/forwardButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/adelante"
-            android:enabled="false"
-            android:padding="12dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_forward" />
-
-        <ImageButton
-            android:id="@+id/reloadButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/recargar"
-            android:padding="12dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_reload" />
-
-        <ImageButton
-            android:id="@+id/favoritesButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/favoritos"
-            android:padding="12dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_favorites" />
-
-        <ImageButton
-            android:id="@+id/addToFavoritesButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/anadir_a_favoritos"
-            android:padding="12dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/ic_add_to_favorites" />
-
-    </LinearLayout>
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
