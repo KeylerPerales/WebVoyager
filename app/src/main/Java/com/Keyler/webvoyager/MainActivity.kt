@@ -4,32 +4,39 @@ import android.os.Bundle
 import android.view.View
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.Button
+import android.widget.ImageButton
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
-import android.webkit.WebSettings
-import androidx.appcompat.app.AlertDialog
 import android.widget.ArrayAdapter
+import android.widget.TextView
+import android.webkit.WebSettings
 import android.webkit.DownloadListener
+import androidx.appcompat.app.AlertDialog
 import android.app.DownloadManager
 import androidx.appcompat.app.AppCompatActivity
 import android.net.Uri
 import android.os.Environment
+import android.graphics.Typeface
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.StyleSpan
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var editTextUrl: EditText
     private lateinit var webView: WebView
-    private lateinit var buttonGo: Button
-    private lateinit var buttonBack: Button
-    private lateinit var buttonForward: Button
-    private lateinit var buttonRefresh: Button
+    private lateinit var buttonGo: ImageButton
+    private lateinit var buttonBack: ImageButton
+    private lateinit var buttonForward: ImageButton
+    private lateinit var buttonRefresh: ImageButton
     private lateinit var progressBar: ProgressBar
     private lateinit var webClient: WebViewClient
 	private val navigationHistory = mutableListOf<String>()
-    private lateinit var buttonHistory: Button
-
+    private lateinit var buttonHistory: ImageButton
+	private lateinit var watermarkBottom: TextView
+	private lateinit var buttonHome: ImageButton
+	
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         supportActionBar?.hide()
@@ -43,10 +50,29 @@ class MainActivity : AppCompatActivity() {
         buttonRefresh = findViewById(R.id.buttonRefresh)
         progressBar = findViewById(R.id.progressBar)
 		buttonHistory = findViewById(R.id.buttonHistory)
+		watermarkBottom = findViewById(R.id.watermark_bottom)
+		buttonHome = findViewById(R.id.buttonHome)
+		
+		val watermarkBottom = findViewById<TextView>(R.id.watermark_bottom) // Inicializar la variable
 
+        val fullText = "WebVoyager Codename \"Alpha\"\nFor testing purpose only. Build 158"
+        val boldText = "WebVoyager Codename \"Alpha\""
+        val spannableString = SpannableString(fullText)
+
+        val startIndex = fullText.indexOf(boldText)
+        val endIndex = startIndex + boldText.length
+
+        if (startIndex != -1) {
+            spannableString.setSpan(StyleSpan(Typeface.BOLD), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+
+        watermarkBottom.text = spannableString
+		
         val progressBarLocal = findViewById<ProgressBar>(R.id.progressBar)
 		
 		val webSettings: WebSettings = webView.settings
+		
+		val homePageUrl = "https://www.google.com" // Puedes cambiar esta URL a la que prefiera
 		
 		webSettings.javaScriptEnabled = true
 		
@@ -125,6 +151,11 @@ class MainActivity : AppCompatActivity() {
 		buttonHistory.setOnClickListener {
             showHistoryDialog()
 		}
+		
+		buttonHome.setOnClickListener {
+            webView.loadUrl(homePageUrl)
+            editTextUrl.setText(homePageUrl)
+        }
 
         // Restaurar el estado del WebView si hay un estado guardado
         if (savedInstanceState != null) {
@@ -135,9 +166,9 @@ class MainActivity : AppCompatActivity() {
 			}
         } else {
             // Cargar una página inicial si no hay estado guardado
-            webView.loadUrl("https://www.google.com") // Puedes cambiar esta URL por la que prefieras
-			navigationHistory.add("https://www.google.com")
-			editTextUrl.setText("https://www.google.com") // Establecer la URL inicial en el EditText
+            webView.loadUrl(homePageUrl) // Usa la misma URL de la variable homePageUrl
+            navigationHistory.add(homePageUrl)
+            editTextUrl.setText(homePageUrl) // Establecer la URL inicial en el EditText
         }
     }
 	
