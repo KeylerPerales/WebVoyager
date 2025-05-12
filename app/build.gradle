@@ -8,8 +8,8 @@ android {
         applicationId "com.keyler.webvoyager"
         minSdkVersion 19
         targetSdkVersion 36
-        versionCode 21
-        versionName "1.0.0.145-alpha"
+        versionCode 52
+        versionName "1.0.158-alpha"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 		
 		sourceSets{
