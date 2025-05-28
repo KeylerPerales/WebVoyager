@@ -1,26 +1,34 @@
 package com.keyler.webvoyager
 
-import android.os.Bundle
-import android.view.View
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import android.widget.ImageButton
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Toast
-import android.widget.ArrayAdapter
-import android.widget.TextView
-import android.webkit.WebSettings
-import android.webkit.DownloadListener
-import androidx.appcompat.app.AlertDialog
 import android.app.DownloadManager
-import androidx.appcompat.app.AppCompatActivity
-import android.net.Uri
-import android.os.Environment
+import android.content.Intent
 import android.graphics.Typeface
+import android.net.Uri
+import android.os.Bundle
+import android.os.Environment
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.webkit.DownloadListener
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.PopupMenu
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
+
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+
+import com.keyler.webvoyager.model.Bookmark
+import com.keyler.webvoyager.utils.BookmarkManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -53,7 +61,9 @@ class MainActivity : AppCompatActivity() {
 		watermarkBottom = findViewById(R.id.watermark_bottom)
 		buttonHome = findViewById(R.id.buttonHome)
 		
-		val watermarkBottom = findViewById<TextView>(R.id.watermark_bottom) // Inicializar la variable
+		// Solo para informacion de etapa temprana
+		
+		/*val watermarkBottom = findViewById<TextView>(R.id.watermark_bottom) // Inicializar la variable
 
         val fullText = "WebVoyager Codename \"Alpha\"\nFor testing purpose only. Build 158"
         val boldText = "WebVoyager Codename \"Alpha\""
@@ -66,7 +76,7 @@ class MainActivity : AppCompatActivity() {
             spannableString.setSpan(StyleSpan(Typeface.BOLD), startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
 
-        watermarkBottom.text = spannableString
+        watermarkBottom.text = spannableString*/
 		
         val progressBarLocal = findViewById<ProgressBar>(R.id.progressBar)
 		
@@ -76,6 +86,45 @@ class MainActivity : AppCompatActivity() {
 		
 		webSettings.javaScriptEnabled = true
 		
+		val btnMenu = findViewById<ImageButton>(R.id.btn_popup_menu)
+        btnMenu.setOnClickListener {
+            val popup = PopupMenu(this, btnMenu)
+            popup.menuInflater.inflate(R.menu.menu_main, popup.menu)
+			try {
+                val fields = popup.javaClass.declaredFields
+                for (field in fields) {
+                    if ("mPopup" == field.name) {
+                        field.isAccessible = true
+                        val menuPopupHelper = field.get(popup)
+                        val classPopupHelper = Class.forName(menuPopupHelper.javaClass.name)
+                        val setForceIcons = classPopupHelper.getMethod("setForceShowIcon", Boolean::class.javaPrimitiveType)
+                        setForceIcons.invoke(menuPopupHelper, true)
+                        break
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.action_add_bookmark -> {
+                        val url = webView.url ?: return@setOnMenuItemClickListener false
+                        val title = webView.title ?: url
+                        BookmarkManager.saveBookmark(this, Bookmark(title, url))
+                        Toast.makeText(this, "Added to favorites", Toast.LENGTH_SHORT).show()
+                        true
+                    }
+                    R.id.action_show_bookmarks -> {
+                        val intent = Intent(this, BookmarkActivity::class.java)
+                        startActivity(intent)
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popup.show()
+        }
+		
 		webView.setDownloadListener(DownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
             val request = DownloadManager.Request(Uri.parse(url))
 
@@ -84,7 +133,7 @@ class MainActivity : AppCompatActivity() {
                 ?: contentDisposition?.substringAfter("filename=\"")?.substringBefore("\"")
                 ?: url.substringAfterLast("/")
 
-            request.setDescription("Descargando archivo")
+            request.setDescription("Downloading file")
             request.setTitle(filename)
 
             request.allowScanningByMediaScanner()
@@ -93,7 +142,7 @@ class MainActivity : AppCompatActivity() {
 
             val dm = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
             dm.enqueue(request)
-            Toast.makeText(this@MainActivity, "Descarga iniciada", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@MainActivity, "Download started", Toast.LENGTH_LONG).show()
         })
 
         webClient = object : WebViewClient() {
@@ -121,7 +170,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 progressBarLocal.visibility = android.view.View.GONE // Ocultar la barra de progreso en caso de error
                 // Mostrar un mensaje de error al usuario
-                Toast.makeText(this@MainActivity, "Error al cargar la página.", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@MainActivity, "Error to load page", Toast.LENGTH_LONG).show()
                 // Puedes también cargar una página de error personalizada en el WebView si lo deseas
                 webView.loadUrl("file:///android_asset/error.html")
             }
@@ -174,7 +223,7 @@ class MainActivity : AppCompatActivity() {
 	
 	private fun showHistoryDialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Historial de Navegación")
+        builder.setTitle("")
 
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, navigationHistory)
 
@@ -183,7 +232,7 @@ class MainActivity : AppCompatActivity() {
             webView.loadUrl(selectedUrl)
         }
 
-        builder.setNegativeButton("Cerrar") { dialog, _ ->
+        builder.setNegativeButton("Close") { dialog, _ ->
             dialog.dismiss()
         }
 
@@ -195,5 +244,26 @@ class MainActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         // Guardar el estado del WebView
         webView.saveState(outState)
+    }
+	
+	override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_add_bookmark -> {
+                val bookmark = Bookmark(webView.title ?: "No title", webView.url ?: "")
+                BookmarkManager.saveBookmark(this, bookmark)
+                Toast.makeText(this, "Saved favorite", Toast.LENGTH_SHORT).show()
+                return true
+            }
+            R.id.action_show_bookmarks -> {
+                startActivity(Intent(this, BookmarkActivity::class.java))
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
