@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name">WebVoyager</string>
-    <string name="introduce_url">Introduce la URL</string>
-    <string name="ir">Ir</string>
-    <string name="atras">Atrás</string>
-    <string name="adelante">Adelante</string>
-    <string name="recargar">Recargar</string>
-    <string name="favoritos">Favoritos</string>
-    <string name="anadir_favoritos">Añadir Fav</string>
-    <string name="eliminar">Eliminar</string>
+    <string name="editTextUrl">Enter URL</string>
+    <string name="buttonGo">Go</string>
+    <string name="buttonBack">Back</string>
+    <string name="buttonForward">Forward</string>
+    <string name="buttonRefresh">Refresh</string>
+	<string name="buttonHistory">History</string>
+	<string name="buttonHome">Home</string>
+	<string name="show_bookmarks">Show Favorites</string>
+	<string name="add_bookmark">Add to Favorites</string>
+	<string name="menu">Menu</string>
 </resources>
