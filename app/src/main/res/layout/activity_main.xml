@@ -82,6 +82,16 @@
                 android:src="@drawable/ic_home"
                 android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/buttonHome" />
+				
+			<ImageButton
+                android:id="@+id/btn_popup_menu"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+				android:layout_weight="1"
+                android:layout_gravity="end"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="menu"
+                android:src="@drawable/ic_more_vert" />
 
         </LinearLayout>
 
@@ -113,6 +123,7 @@
         android:gravity="left"
         android:padding="8dp"
         android:textAlignment="textEnd"
+		android:text="WebVoyager Beta\nFor testing purpose only. Build 171"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
