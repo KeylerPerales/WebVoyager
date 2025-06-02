@@ -1,13 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_add_bookmark"
-        android:title="Add to favorites"
+        android:title="@string/add_bookmark"
 		android:icon="@drawable/ic_add_bookmark"
 		android:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_show_bookmarks"
-        android:title="Show favorites"
+        android:title="@string/show_bookmarks"
 		android:icon="@drawable/ic_bookmark"
 		android:showAsAction="ifRoom" />
+		
+	<item
+        android:id="@+id/action_show_history"
+        android:title="@string/showhistory"
+        android:icon="@drawable/ic_history"
+        app:showAsAction="never" />
+		
+	<item
+        android:id="@+id/downloads"
+        android:title="@string/downloads"
+        android:icon="@drawable/ic_downloads"
+        app:showAsAction="ifRoom" />
+		
 </menu>
