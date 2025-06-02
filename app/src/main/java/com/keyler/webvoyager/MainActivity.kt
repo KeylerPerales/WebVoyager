@@ -9,10 +9,13 @@ import android.os.Environment
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.webkit.DownloadListener
+import android.webkit.URLUtil
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -28,7 +31,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
 import com.keyler.webvoyager.model.Bookmark
+import com.keyler.webvoyager.model.HistoryEntry
 import com.keyler.webvoyager.utils.BookmarkManager
+import com.keyler.webvoyager.utils.HistoryManager
 
 class MainActivity : AppCompatActivity() {
 
@@ -57,11 +62,11 @@ class MainActivity : AppCompatActivity() {
         buttonForward = findViewById(R.id.buttonForward)
         buttonRefresh = findViewById(R.id.buttonRefresh)
         progressBar = findViewById(R.id.progressBar)
-		buttonHistory = findViewById(R.id.buttonHistory)
 		watermarkBottom = findViewById(R.id.watermark_bottom)
 		buttonHome = findViewById(R.id.buttonHome)
+		editTextUrl = findViewById(R.id.editTextUrl)
 		
-		// Solo para informacion de etapa temprana
+		// Solo en uso de etapa temprana
 		
 		/*val watermarkBottom = findViewById<TextView>(R.id.watermark_bottom) // Inicializar la variable
 
@@ -119,31 +124,52 @@ class MainActivity : AppCompatActivity() {
                         startActivity(intent)
                         true
                     }
+					R.id.action_show_history -> {
+                        val intent = Intent(this, HistoryActivity::class.java)
+                        startActivity(intent)
+                        true
+                    }
+					R.id.downloads -> {
+						val intent = Intent(this, DownloadsActivity::class.java)
+                        startActivity(intent)
+						true
+					}
                     else -> false
                 }
             }
             popup.show()
         }
 		
-		webView.setDownloadListener(DownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
-            val request = DownloadManager.Request(Uri.parse(url))
+		webView.setDownloadListener { url, userAgent, contentDisposition, mimeType, contentLength ->
+            try {
+                val safeMimeType = mimeType ?: "*/*"
 
-            request.setMimeType(mimetype)
-            val filename = contentDisposition?.substringAfter("filename*=UTF-8''")?.substringBefore(";")
-                ?: contentDisposition?.substringAfter("filename=\"")?.substringBefore("\"")
-                ?: url.substringAfterLast("/")
+                // Intentar obtener el nombre del archivo con respaldo seguro
+                val rawFilename = try {
+                    URLUtil.guessFileName(url, contentDisposition, safeMimeType)
+                } catch (e: Exception) {
+                    null
+                }
 
-            request.setDescription("Downloading file")
-            request.setTitle(filename)
+                val filename = if (!rawFilename.isNullOrBlank()) {
+                    if (!rawFilename.contains(".")) "$rawFilename.dat" else rawFilename
+                } else {
+                    "downloaded_file_${System.currentTimeMillis()}.dat"
+                }
 
-            request.allowScanningByMediaScanner()
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)
-
-            val dm = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-            dm.enqueue(request)
-            Toast.makeText(this@MainActivity, "Download started", Toast.LENGTH_LONG).show()
-        })
+                AlertDialog.Builder(this)
+                    .setTitle("Download")
+                    .setMessage("Do you want to download \"$filename\"?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        startDownload(url, filename, safeMimeType)
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            } catch (e: Exception) {
+                Toast.makeText(this, "Error preparing download: ${e.message}", Toast.LENGTH_LONG).show()
+                e.printStackTrace()
+            }
+        }
 
         webClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
@@ -159,8 +185,11 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
-                progressBarLocal.visibility = android.view.View.GONE
-				url?.let { editTextUrl.setText(it) }
+				progressBar.visibility = View.GONE
+				progressBar.isIndeterminate = true
+                val title = view?.title ?: url ?: "Sin título"
+                val validUrl = url ?: return
+                HistoryManager.saveEntry(this@MainActivity, HistoryEntry(title, validUrl, System.currentTimeMillis()))
             }
 
             override fun onReceivedError(
@@ -197,13 +226,25 @@ class MainActivity : AppCompatActivity() {
             webView.reload()
         }
 		
-		buttonHistory.setOnClickListener {
-            showHistoryDialog()
-		}
-		
 		buttonHome.setOnClickListener {
             webView.loadUrl(homePageUrl)
             editTextUrl.setText(homePageUrl)
+        }
+		
+		editTextUrl.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_GO || actionId == EditorInfo.IME_ACTION_DONE) {
+                val url = editTextUrl.text.toString()
+                if (url.isNotBlank()) {
+                    webView.loadUrl(url)
+
+                    // Ocultar el teclado
+                    val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(editTextUrl.windowToken, 0)
+                }
+                true
+            } else {
+                false
+            }
         }
 
         // Restaurar el estado del WebView si hay un estado guardado
@@ -219,25 +260,6 @@ class MainActivity : AppCompatActivity() {
             navigationHistory.add(homePageUrl)
             editTextUrl.setText(homePageUrl) // Establecer la URL inicial en el EditText
         }
-    }
-	
-	private fun showHistoryDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("")
-
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, navigationHistory)
-
-        builder.setAdapter(adapter) { dialog, which ->
-            val selectedUrl = navigationHistory[which]
-            webView.loadUrl(selectedUrl)
-        }
-
-        builder.setNegativeButton("Close") { dialog, _ ->
-            dialog.dismiss()
-        }
-
-        val dialog = builder.create()
-        dialog.show()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -265,5 +287,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+	
+	private fun startDownload(url: String, filename: String, mimeType: String) {
+        val request = DownloadManager.Request(Uri.parse(url)).apply {
+            setMimeType(mimeType)
+            setTitle(filename)
+            setDescription("Downloading file...")
+            setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, filename)
+            allowScanningByMediaScanner()
+        }
+
+        val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
+        downloadManager.enqueue(request)
+        Toast.makeText(this, "Download started", Toast.LENGTH_SHORT).show()
     }
 }
