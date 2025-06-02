@@ -11,9 +11,9 @@ import com.keyler.webvoyager.utils.BookmarkManager
 class BookmarkActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+		title = "Favorites"
         val listView = ListView(this)
-		supportActionBar?.hide()
-        setContentView(listView)
+        setContentView(list}View)
 
         val bookmarks = BookmarkManager.getBookmarks(this)
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, bookmarks.map { it.title })
