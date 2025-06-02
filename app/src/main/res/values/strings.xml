@@ -10,4 +10,6 @@
 	<string name="show_bookmarks">Show Favorites</string>
 	<string name="add_bookmark">Add to Favorites</string>
 	<string name="menu">Menu</string>
+	<string name="showhistory">View History</string>
+	<string name="downloads">Downloads</string>
 </resources>
