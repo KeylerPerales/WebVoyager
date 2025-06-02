@@ -66,15 +66,6 @@
                 android:contentDescription="@string/buttonGo" />
 
             <ImageButton
-                android:id="@+id/buttonHistory"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:src="@drawable/ic_history"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/buttonHistory" />
-
-            <ImageButton
                 android:id="@+id/buttonHome"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
@@ -123,7 +114,7 @@
         android:gravity="left"
         android:padding="8dp"
         android:textAlignment="textEnd"
-		android:text="WebVoyager Beta\nFor testing purpose only. Build 171"
+		android:text="WebVoyager Beta\nFor testing purpose only. Build 176"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
