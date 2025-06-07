@@ -1,5 +1,5 @@
 {
   "latest_version": "1.0.176-beta",
-  "changelog": "• Se mejoró el historial\n• Se corrigieron errores menores",
+  "changelog": "Nuevas funciones/nAgregado soporte para presionar Enter/Go en la barra de direcciones para cargar páginas directamente desde el teclado./nSe agregó una alerta de confirmación antes de iniciar una descarga./nImplementación inicial de un icono de descarga lista en formato vectorial./n🔧 Mejoras/nEl historial persistente (usando SharedPreferences) se mantiene incluso si el usuario cierra la aplicación./nSe corrigió la barra de progreso del WebView para que desaparezca correctamente al terminar de cargar la página./nMejoras menores en la gestión de descargas, con nombres de archivo más precisos usando URLUtil./n🐞 Correcciones/nSe corrigió un error donde ciertas descargas (como íconos desde Material Design Icons) causaban un cierre inesperado./nSe solucionó un problema con menu_main.xml por un prefijo XML no declarado (app:).",
   "download_url": "https://github.com/KeylerPerales/WebVoyager/releases/download/v1.0.176/WebVoyager-debug.apk"
 }
