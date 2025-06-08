@@ -1,0 +1,42 @@
+[
+  {
+    "artifactId": "kotlin-stdlib",
+    "excludes": [],
+    "groupId": "org.jetbrains.kotlin",
+    "scope": "compile",
+    "versionName": "1.5.21"
+  },
+  {
+    "artifactId": "appcompat",
+    "excludes": [],
+    "groupId": "androidx.appcompat",
+    "scope": "compile",
+    "versionName": "1.3.1"
+  },
+  {
+    "artifactId": "material",
+    "excludes": [],
+    "groupId": "com.google.android.material",
+    "scope": "compile",
+    "versionName": "1.4.0"
+  },
+  {
+    "artifactId": "constraintlayout",
+    "excludes": [],
+    "groupId": "androidx.constraintlayout",
+    "scope": "compile",
+    "versionName": "2.1.0"
+  },
+  {
+    "artifactId": "gson",
+    "excludes": [],
+    "groupId": "com.google.code.gson",
+    "versionName": "2.10.1"
+  },
+  {
+    "artifactId": "json",
+    "excludes": [],
+    "groupId": "org.json",
+    "versionName": "20231013"
+  }
+]
