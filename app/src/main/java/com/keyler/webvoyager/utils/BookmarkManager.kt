@@ -3,7 +3,6 @@ package com.keyler.webvoyager.utils
 import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-
 import com.keyler.webvoyager.model.Bookmark
 
 object BookmarkManager {
