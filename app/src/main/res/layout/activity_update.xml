@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:padding="24dp"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<TextView
+		android:id="@+id/updateText"
+		android:text="Downloading new version..."
+		android:textSize="18sp"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content" />
+
+	<ProgressBar
+		android:id="@+id/updateProgressBar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:indeterminate="false"
+		android:max="100"
+		android:progress="0"
+		style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal" />
+
+	<Button
+		android:id="@+id/startUpdateButton"
+		android:text="Download Update"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="20dp" />
+		
+	<Button
+		android:id="@+id/checkUpdateButton"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:text="Search Update" />
+	
+</LinearLayout>
