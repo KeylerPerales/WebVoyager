@@ -12,8 +12,9 @@ class BookmarkActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 		title = "Favorites"
+		
         val listView = ListView(this)
-        setContentView(list}View)
+        setContentView(listView)  // Corrección aquí
 
         val bookmarks = BookmarkManager.getBookmarks(this)
         val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, bookmarks.map { it.title })

@@ -16,6 +16,7 @@ import android.view.MenuItem
 import android.view.View
 import android.webkit.DownloadListener
 import android.webkit.URLUtil
+import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -29,11 +30,13 @@ import android.widget.Toast
 
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 
 import com.keyler.webvoyager.model.Bookmark
 import com.keyler.webvoyager.model.HistoryEntry
 import com.keyler.webvoyager.utils.BookmarkManager
 import com.keyler.webvoyager.utils.HistoryManager
+import com.keyler.webvoyager.utils.UpdateChecker
 
 class MainActivity : AppCompatActivity() {
 
@@ -134,11 +137,33 @@ class MainActivity : AppCompatActivity() {
                         startActivity(intent)
 						true
 					}
+					R.id.update -> {
+						val intent = Intent(this, UpdateActivity::class.java)
+						startActivity(intent)
+						true
+					}
                     else -> false
                 }
             }
             popup.show()
         }
+		
+		UpdateChecker.checkForUpdate(this) { isAvailable, changelog, url ->
+			if (isAvailable) {
+				runOnUiThread {
+					AlertDialog.Builder(this)
+					.setTitle("New version available")
+					.setMessage("Do you want to update?\n\nChanges:\n$changelog")
+					.setPositiveButton("Update") { _, _ ->
+					val intent = Intent(this, UpdateActivity::class.java)
+						intent.putExtra("download_url", url)
+						startActivity(intent)
+					}
+					.setNegativeButton("Later", null)
+					.show()
+				}
+			}
+		}
 		
 		webView.setDownloadListener { url, userAgent, contentDisposition, mimeType, contentLength ->
             try {
@@ -170,11 +195,24 @@ class MainActivity : AppCompatActivity() {
                 e.printStackTrace()
             }
         }
+		
+		webView.webChromeClient = object : WebChromeClient() {
+			override fun onProgressChanged(view: WebView?, newProgress: Int) {
+				progressBarLocal.isIndeterminate = false
+				progressBarLocal.max = 100
+				progressBarLocal.progress = newProgress
+		
+				if (newProgress < 100) {
+					progressBarLocal.visibility = View.VISIBLE
+				} else {
+					progressBarLocal.visibility = View.GONE
+				}
+			}
+		}
 
         webClient = object : WebViewClient() {
             override fun onPageStarted(view: WebView?, url: String?, favicon: android.graphics.Bitmap?) {
-                progressBarLocal.visibility = android.view.View.VISIBLE
-				progressBarLocal.isIndeterminate = true
+				progressBarLocal.visibility = View.VISIBLE
 				if (!navigationHistory.contains(url) && url != null) {
                     navigationHistory.add(url)
                     if (navigationHistory.size > 10) {
@@ -204,7 +242,8 @@ class MainActivity : AppCompatActivity() {
                 webView.loadUrl("file:///android_asset/error.html")
             }
         }
-        webView.webViewClient = webClient
+		
+		webView.webViewClient = webClient
 
         buttonGo.setOnClickListener {
             val url = editTextUrl.text.toString()
