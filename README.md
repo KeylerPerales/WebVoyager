@@ -16,12 +16,12 @@
 
 ## 📦 Última versión
 
-**Versión actual:** `1.0.182`  
+**Versión actual:** `1.0.182-beta`  
 Consulta el archivo [`version.json`](https://raw.githubusercontent.com/KeylerPerales/WebVoyager/main/version.json) para detalles sobre actualizaciones automáticas.
 
 ## 📱 Requisitos
 
-- Android 5.0 (API 21) o superior
+- Android 4.4 (API 19) o superior
 - Permisos:  
   - Acceso a Internet  
   - Lectura y escritura de almacenamiento (para descarga del APK)
@@ -30,7 +30,6 @@ Consulta el archivo [`version.json`](https://raw.githubusercontent.com/KeylerPer
 
 - Kotlin
 - Android SDK (API 31)
-- OkHttp 3.12.12
 - SharedPreferences para almacenamiento local
 - DownloadManager para descargas
 
@@ -44,7 +43,7 @@ Puedes descargar el APK directamente desde la [última release](https://github.c
 
 ## 📝 Licencia
 
-Este proyecto está bajo la licencia MIT. Consulta el archivo [`LICENSE`](LICENSE) para más detalles.
+Este proyecto está bajo la licencia "Apache License 2.0". Consulta el archivo [`LICENSE`](LICENSE) para más detalles.
 
 ---
 
