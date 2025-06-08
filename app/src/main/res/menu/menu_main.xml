@@ -24,4 +24,10 @@
         android:icon="@drawable/ic_downloads"
         app:showAsAction="ifRoom" />
 		
+	<item
+		android:id="@+id/update"
+		android:title="@string/update"
+		android:icon="@drawable/ic_update"
+		app:showAsAction="ifRoom" />
+		
 </menu>
