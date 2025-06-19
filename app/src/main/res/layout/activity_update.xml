@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/updateLayout"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:padding="16dp"
+	tools:context=".UpdateActivity">
+
+	<TextView
+		android:id="@+id/updateText"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:text="Press the button to check for updates"
+		android:textAppearance="?android:attr/textAppearanceMedium"
+		app:layout_constraintTop_toTopOf="parent"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintBottom_toTopOf="@+id/updateProgressBar"
+		android:layout_marginBottom="16dp" />
+
+	<ProgressBar
+		android:id="@+id/updateProgressBar"
+		style="@android:style/Widget.ProgressBar.Horizontal"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:max="100"
+		android:progress="0"
+		android:indeterminate="false"
+		app:layout_constraintTop_toBottomOf="@id/updateText"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintBottom_toTopOf="@+id/checkUpdateButton"
+		android:layout_marginBottom="16dp" />
+
+	<Button
+		android:id="@+id/checkUpdateButton"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:text="Search update"
+		app:layout_constraintTop_toBottomOf="@id/updateProgressBar"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintBottom_toTopOf="@+id/startUpdateButton"
+		android:layout_marginBottom="12dp" />
+
+	<Button
+		android:id="@+id/startUpdateButton"
+		android:layout_width="0dp"
+		android:layout_height="wrap_content"
+		android:text="Download update"
+		android:visibility="gone"
+		app:layout_constraintTop_toBottomOf="@id/checkUpdateButton"
+		app:layout_constraintStart_toStartOf="parent"
+		app:layout_constraintEnd_toEndOf="parent"
+		app:layout_constraintBottom_toBottomOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>
