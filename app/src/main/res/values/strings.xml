@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">WebVoyager</string>
+    <string name="editTextUrl">Enter URL</string>
+    <string name="buttonGo">Go</string>
+    <string name="buttonBack">Back</string>
+    <string name="buttonForward">Forward</string>
+    <string name="buttonRefresh">Refresh</string>
+	<string name="buttonHistory">History</string>
+	<string name="buttonHome">Home</string>
+	<string name="show_bookmarks">Show Favorites</string>
+	<string name="add_bookmark">Add to Favorites</string>
+	<string name="menu">Menu</string>
+	<string name="showhistory">View History</string>
+	<string name="downloads">Downloads</string>
+	<string name="update">Updates</string>
+</resources>
