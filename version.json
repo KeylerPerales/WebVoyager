@@ -1,5 +1,5 @@
 {
-  "latest_version": "1.0.182-beta",
-  "changelog": "📝 Cambios en la versión 1.0.182-beta:\n\n- Añadido verificador de actualizaciones.\n- Descarga automática del APK con barra de progreso.\n- Mejoras en el historial de navegación (eliminar y abrir entradas).\n- Correcciones de errores y compatibilidad con SDK 31.",
-  "download_url": "https://github.com/KeylerPerales/WebVoyager/releases/download/v1.0.182/WebVoyager-v1.0.182-beta.apk"
+  "latest_version": "1.0.195-beta",
+  "changelog": "📝 Cambios en la versión 1.0.195-beta:\n\n- Mejoras en el sistema de actualizaciones\n- Soporte completo para descargas con OkHttp\n- Barra de progreso funcional\n- Varias correcciones de errores\n- Mejor compatibilidad con SDKs modernos",
+  "download_url": "https://github.com/KeylerPerales/WebVoyager/releases/download/v1.0.195/WebVoyager-v1.0.195-beta.apk"
 }
